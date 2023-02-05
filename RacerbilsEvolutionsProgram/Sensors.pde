@@ -27,6 +27,7 @@ class SensorSystem {
   boolean lastGreenDetection;
   int     lastTimeInFrames      = 0;
   int     lapTimeInFrames       = 10000;
+  int laps = 0;
 
   void displaySensors() {
     strokeWeight(0.5);
@@ -73,6 +74,7 @@ class SensorSystem {
     if (lastGreenDetection && !currentGreenDetection) {  //sidst grønt - nu ikke -vi har passeret målstregen 
       lapTimeInFrames = frameCount - lastTimeInFrames; //LAPTIME BEREGNES - frames nu - frames sidst
       lastTimeInFrames = frameCount;
+      laps++;
     }   
     lastGreenDetection = currentGreenDetection; //Husker om der var grønt sidst
     //count clockWiseRotationFrameCounter
@@ -97,5 +99,13 @@ class SensorSystem {
     sensorVectorLeft.rotate(-sensorAngle);
     sensorVectorRight.set(sensorVectorFront);
     sensorVectorRight.rotate(sensorAngle);
+  }
+  
+  int getFitness(SensorSystem x) {
+    int fitness = 1200 * laps + int(x.clockWiseRotationFrameCounter);
+    if (x.whiteSensorFrameCount > 0) {
+     fitness = 0; 
+    }
+    return fitness;
   }
 }
