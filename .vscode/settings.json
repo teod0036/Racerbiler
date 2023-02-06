@@ -1,0 +1,20 @@
+{
+	"java.dependency.packagePresentation": "hierarchical",
+	"java.project.referencedLibraries": [
+		"lib/**/*.jar",
+		"c:\\Program Files\\processing-4.0.1\\core\\library\\core.jar",
+		"/Users/alexa/Downloads/core.jar",
+		"/Users/alexa/Downloads/mysql-connector-java-8.0.30/mysql-connector-java-8.0.30.jar",
+		"c:\\Users\\alexa\\Downloads\\mysql-connector-java-8.0.30\\mysql-connector-java-8.0.30\\mysql-connector-java-8.0.30.jar"
+	],
+	"java.project.sourcePaths": [
+		"src",
+		"img"
+	],
+	"java.project.outputPath": "bin",
+	"java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx8G -Xms100m -Xlog:jni+resolve=off",
+	"java.project.resourceFilters": [
+		"node_modules",
+		".git"
+	]
+}
