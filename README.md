@@ -1,49 +1,23 @@
-# Racerbils Neuro Evolution
-Dette repo indeholder kode og materiale til forløbet "Racerbils Evolution". </br>
-Formålet med forløbet er at bygge en Genetisk Algoritme, der kun udvikle den hurtigst mulige racerbil. </br> 
-Dvs. den bil der kan gennemføre en omgang på den virtuelle 2D-racerbane, hurtigst muligt uden at køre galt.</br>
-Racerbilerne styres af et såkaldt neuralt netværk.
-
-## Bekrivelse af programmet 
-### Racerbils Evolutions Programmet
-Mappen "RacerBilsEvolutionsProgram" indeholder et program til at generere "tilfældige" simple autonome racerbiler i en 2D verden. 
-Med tilfældige menes at deres hjerner, et simpelt neuralt netværk, endnu ikke er indstillet/optimeret. 
-De autonome bilers sensorsystem kan genkende to forskellige farver: "hvid" som er udenfor banen og "grøn" som er målstregen.
-Genkendelse af farven grøn kan bruges til at beregne hvor hurtigt bilen gennemfører en omgang.
-Bilerne bevæger sig med en konstant hastighed på 5 pixels pr. frame,- og ændre retning ved at rotere om egen akse. Nedenfor ses en sreenshot af programmet:</br>
-![Programmet køres](billeder/WorldOfRacerbiler.png)
-### Racerbilen grafiske visning
-Nedenfor ses en racerbil som den ser ud i programmet. Den højre sensor har detekteret den hvide farve og lyser rødt:
-![Den Autonome Racerbil Grafiske repræsentation](billeder/CarAndSensors.png)
-
-
-## Beksrivelse af bilens hjerne : Det Neurale Netværk
-Bilernes hjerner styrer bilen ved at reagere på input fra de sensorer, der registerer farven "hvid", da alt udenfor banen er hvidt.
-Hjernen fortæller baseret på sine input om bilen skal rotere til venstre eller højre.
-Hjernen er et simpelt fuldt forbundet feedforward Neuralt Netværk. Nedenfor ses et diagram over bilen neurale netværk:</br>
-![](billeder/NN1.png)
-
-Et neuralt netværk er opbygget af neuroner (vist med cirkler), som modtager et vilkårligt antal input som hver bliver multipliceret med et tal kaldet en "vægt" (vist som w), reultatet bliver adderet med et andet tal kaldet "bias" (ikke vist) og sendes igennem en matematisk funktion kaldet en "aktiverings funktion"(ikke vist). Vi arbejder med meget simple neuroner, hvis aktivitetsfunktion bare er f(x) = x eller y = x.</br>
-Man tegner normalt input til hele det neurale netværk, som neuroner markeret med x (de grønne cirkler), selvom de i virkeligheden bare er input.</br>
-Nedenfor ses et eksempel på en neuron:</br>
-![Eksempel på en neuron](billeder/NeuronExample.png)
-
-Styrken ved det neurale netværk ligger i muligheden for at justere "vægte" og "bias" indtil det giver os det ønskede svar, dvs. styrer bilen uden at køre udenfor banen.</br>
-Bland andet indenfor billedgenkendelse er væsenligt mere komplicerede Neurale Netværk populære. Til disse typer opgaver anvendes træningsmetoder kategoriseret som "Deep Learning". 
-
-## Beskrivelse af koden : De vigtigste klasser
-### Klassediagram over den autonome racerbil
-Nedenfor ses et klassediagram for vigtigste dele af "den autonome racerbil", i koden kaldet "CarController":</br></br>
-![Den Autonome Racerbil klasse komposition, kaldet CarController](billeder/CarControllerDiagram.png)
-### CarController: Den autonome bil. Indeholder et SensorSystem, et NeuraltNetwork og en Car.
-CarControlleren fodrer NeuraltNetwork  med signaler fra SensorSystem’s left/right/front/sensor. </br>
-Det neurale netværks output styrer bilen.</br>
-### Car:Bilen. 
-Hastigheden er konstant 5 pixels/frame. Kan kun dreje/rotere enten til venstre eller højre. </br>
-### SensorSystem: Sensorer. Til at styre en bil og udregne fitness. Indeholder følge vigtige målinger.
-**whiteSensorFrameCount:**  Antal frames bilen er i det hvide område uden for banen</br>
-**frontSensorSignal & leftSensorSignal & rightSensorSignal:** Detektion af hvidt, 50 pixels foran bilen.</br>
-**clockWiseRotationFrameCounter:** Antal frames kørt  “i urets retning”.</br>
-**lapTimeInFrames:** Antal frames bilen bruger inden den kører over den grønne streg.</br>
-### NeuralNetwork: Hjernen. 
-Et simpelt netværk 3 input-, 2 mellem-lags- og 1 output-neuroner. </br>
+#Valg i forhold til sensorer:<br>
+##Sensor vinkel<br>
+Vi har valgt at gøre vinklen som sensorerne er spredt over mindre fordi vores bane er smallere end den originale. Ved at gøre vinklen mindre sørger vi for at der er færrer situationer hvor begge side sensorer er uden for banen.
+<br>
+#Valg i forhold til fitness:<br>
+##Basis fitness<br>
+Vi har valgt at give bilerne en basis fitness på 2000 for at differenchere dem med mange minuspoint fra dem med få minuspoint. vi har valgt ikke at lave fitness til en double der kan gå negativt fordi det ville gøre den besværlig at bruge i randomBil og nextGen koden.<br>
+##Retning<br>
+Ved at sørge for at alle bilerne kører i den samme retning er det lettere at tjekke om bilerne kører rundt om banen eller bare kører rundt om checkpointsne.<br>
+##Køre Af Banen
+I stedet for bare at dræbe alle biler der har været uden for banen har vi valgt at give dem minus point i stedet. Dette hjælper med at differenchere de biler der kører meget uden for banen fra dem der bare kom til at snitte kanten et sted.<br>
+##Checkpoints<br>
+Vi har valgt at tilføje nogle chackpoint på banen sådan at bilerne hurtigt finder ud af at det er godt at røre det grønne og at de skal gøre det i den rigtige retning. Det hjælper dem også med at fortsætte rundt efter de har rørt grøn første gang. Hvis man kun har målstregen sker det nogle gange at de enten tager meget lang tid om at finde målet, eller hvis man starter dem sådan at de hurtigt krydser målstregen bliver de "tilfredse", fordi de har mange point hurtigt og derefterr kører de dårligt.<br>
+##Tid<br>
+Vi har valgt at beregne fitness ud fra mængden af checkpoints passeret og ikke hvor hurtigt bilerne kører rudt da vi kom frem til at dette gav et bedre resultat.<br>
+<br>
+#Valg i forhold til UI:<br>
+##Generations Tæller<br>
+Vi har valgt at tilføje mængden af generationer der er passeret oppe i venstre hjørne da det giver brugeren et bedre overblik over hvor længe programmet har kørt og hvor hurtigt bilerne forbedrer sig.<br>
+<br>
+#Andet:<br>
+##Mutation<br>
+Vi har valgt at mutationen enten tilføjer eller fjerner en tiendedel af variansen da vi mente at en mindre ekstrem mutation ville være bedre end en mutation der bare flipper fortegnet på vægten. Mutationsraten har vi valgt til at være 4% da det giver nogel fine resultater.

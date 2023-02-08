@@ -96,11 +96,11 @@ public class SensorSystem {
     float currentRotationAngle = centerToCarVector.heading();
     float deltaHeading = lastRotationAngle - centerToCarVector.heading();
     if (deltaHeading > 0) {
-      clockWiseRotationFrameCounter += 1;
-      clockwise = true;
-    } else {
       clockWiseRotationFrameCounter -= 1;
       clockwise = false;
+    } else {
+      clockWiseRotationFrameCounter += 1;
+      clockwise = true;
     }
 
     // Laptime calculation
@@ -109,10 +109,15 @@ public class SensorSystem {
         && this.p.green(color_car_position) != 0 && clockwise) {// den grønne målstreg er etekteret
       currentGreenDetection = true;
     }
-    if (lastGreenDetection && !currentGreenDetection && clockwise) { // sidst grønt - nu ikke -vi har passeret målstregen
-      lapTimeInFrames = this.p.frameCount - lastTimeInFrames; // LAPTIME BEREGNES - frames nu - frames sidst
-      lastTimeInFrames = this.p.frameCount;
-      laps++;
+    if (lastGreenDetection && !currentGreenDetection) { // sidst grønt - nu ikke -vi har passeret målstregen
+      if (clockwise) {
+        //lapTimeInFrames = this.p.frameCount - lastTimeInFrames; // LAPTIME BEREGNES - frames nu - frames sidst
+        //lastTimeInFrames = this.p.frameCount;
+        laps++;
+      } else {
+        laps--;
+      }
+      
     }
     lastGreenDetection = currentGreenDetection; // Husker om der var grønt sidst
 
@@ -137,11 +142,11 @@ public class SensorSystem {
   }
 
   public int getFitness() {
-    double fitness = 2000 + (double) (this.clockWiseRotationFrameCounter) - this.lastTimeInFrames
-        - this.whiteSensorFrameCount * 10;
-    if (this.lastTimeInFrames > 0) {
-      fitness += 3000;
-    }
+    double fitness = 2000 + (double) (this.clockWiseRotationFrameCounter) + 1500 * laps
+        - this.whiteSensorFrameCount * 15;
+    //if (this.lastTimeInFrames > 0) {
+    //  fitness += 3000;
+    //}
     if (fitness < 0 || totalRotations > 10) {
       fitness = 0;
     }
